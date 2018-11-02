@@ -95,7 +95,7 @@
                                         <dd>
                                             <div id="buyButton" class="btn-buy">
                                                 <button onclick="cartAdd(this,'/',1,'/shopping.html');" class="buy">立即购买</button>
-                                                <button onclick="cartAdd(this,'/',0,'/cart.html');" class="add">加入购物车</button>
+                                                <button @click="addCart" class="add">加入购物车</button>
                                             </div>
                                         </dd>
                                     </dl>
@@ -192,11 +192,31 @@
                 </div>
             </div>
         </div>
+
+          <!-- 动画元素 -->
+        <transition v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:after-enter="afterEnter">
+            <div v-show="isShow" ref="animateDivRef" class="animateDiv" v-if="GoodDetail.imglist">
+                <img :src="GoodDetail.imglist[0].original_path" alt="">
+            </div>
+        </transition>
+
     </div>
 </template>
 
 <style scoped>
     @import "../../statics/jqimgzoom/css/magnifier.css";
+    .animateDiv{
+        width: 75px;
+        height: 75px;
+        position: absolute;
+        left: 640px;
+        top: 425px;
+    }
+    .animateDiv img{
+        width: 75px;
+        height: 75px;
+    }
+
 </style>
 
 
@@ -219,7 +239,8 @@ export default {
       pageIndex:1,//默认页码
       pageSize:2,//页容量
       total:0,//总记录数
-      commentText:'sss',//评论内容
+      commentText:'',//评论内容
+      isShow:false,//是否显示飞入购物车的图片
     };
   },
   created() {
@@ -270,7 +291,7 @@ export default {
         }
       const url = `site/validate/comment/post/goods/${this.$route.params.goodId}`;
       this.$axios.post(url,{commenttxt:this.commentText}).then(response=>{
-          console.log(response.data);
+        //   console.log(response.data);
           this.$message({
                 message: '评论成功',
                 type: 'success'
@@ -281,7 +302,28 @@ export default {
             this.pageIndex = 1
             this.getCommentListData()
       })
-  }
+  },
+            addCart(){
+                this.isShow = true;
+            },
+            
+            beforeEnter: function (el) {
+                el.style.left=640+"px";
+                el.style.top = 425+'px';
+                el.style.transform = 'scale(1.0)';
+            },
+            
+            enter: function (el, done) {
+               el.style.transition = 'all 0.5s'
+               el.offsetHeight;
+               el.style.left=1200+'px';
+               el.style.top = 2+'px';
+               el.style.transform = 'scale(0.4)'
+                done()
+            },
+            afterEnter: function (el) {
+                this.isShow=false;
+            },
 
   }
 }
