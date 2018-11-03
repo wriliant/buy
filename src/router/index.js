@@ -6,6 +6,7 @@ Vue.use(VueRouter);
 
 import goodlist from "../components/goods/goodslist.vue";
 import gooddetail from "../components/goods/gooddetail.vue";
+import shopcart from "../components/shopcart/shopcart.vue";
 
 import axios from "axios";
 Vue.prototype.$axios = axios;
@@ -17,6 +18,7 @@ const router = new VueRouter({
         { path: '/', redirect: '/goodslist' },
         { path:'/goodslist',component:goodlist },
         { path:'/gooddetail/:goodId',component:gooddetail },
+        { path:'/shopcart',component:shopcart },
     ]
 })
 

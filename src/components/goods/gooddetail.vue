@@ -305,6 +305,12 @@ export default {
   },
             addCart(){
                 this.isShow = true;
+
+                const goods = {
+                    goodsId : this.$route.params.goodId,
+                    count : this.num
+                }
+                this.$store.commit('increment', goods)
             },
             
             beforeEnter: function (el) {
@@ -321,7 +327,7 @@ export default {
                el.style.transform = 'scale(0.4)'
                 done()
             },
-            afterEnter: function (el) {
+            afterEnter: function () {
                 this.isShow=false;
             },
 
