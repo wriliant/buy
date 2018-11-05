@@ -310,7 +310,7 @@ export default {
                     goodsId : this.$route.params.goodId,
                     count : this.num
                 }
-                this.$store.commit('increment', goods)
+                this.$store.commit('addGoods', goods)
             },
             
             beforeEnter: function (el) {

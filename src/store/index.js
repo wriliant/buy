@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex);
 
-import { addLocalGoods, getTotalCount} from "../common/localstoryage.js";
+import { addLocalGoods, getTotalCount,updateLocalGoods,deleteLocalGoods} from "../common/localstoryage.js";
 
 const store = new Vuex.Store({
     state: {
@@ -16,9 +16,15 @@ const store = new Vuex.Store({
       }
     },
     mutations: {
-      increment (state,goods) {
+      addGoods (state,goods) {
         // state.buyCount += goods.count;
         state.buyCount = addLocalGoods(goods)
+      },
+      updateLocalGoods(state,goods){
+        state.buyCount = updateLocalGoods(goods);
+      },
+      deleteGoods(state,goodsId){
+        state.buyCount = deleteLocalGoods(goodsId);
       }
     }
   })

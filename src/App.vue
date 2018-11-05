@@ -11,16 +11,16 @@
                     <a target="_blank" href="#"></a>
                 </div>
                 <div id="menu" class="right-box">
-                    <span style="display: none;">
-                        <a href="" class="">登录</a>
+                    <span v-if="!isShowLoginName">
+                        <router-link to="/login" class="">登录</router-link>
                         <strong>|</strong>
                         <a href="" class="">注册</a>
                         <strong>|</strong>
                     </span>
-                    <span>
+                    <span v-if="isShowLoginName">
                         <a href="" class="">会员中心</a>
                         <strong>|</strong>
-                        <a>退出</a>
+                        <a @click="loginOut">退出</a>
                         <strong>|</strong>
                     </span>
                     <router-link :to="'/shopcart'" class="">
@@ -122,10 +122,41 @@
 </template>
 
 <script>
-
+import { bus } from "./common/commonbus.js";
 
 // 导出的vue对象
 export default {
+    data(){
+        return{
+            isShowLoginName:false
+        }
+    },
+    created(){
+        bus.$on('loginsuccess',()=>{
+            this.isShowLoginName=true;
+        })
+        this.checkOutLogin();
+    },
+    methods:{
+        //确保登陆后刷新显示用户中心
+        checkOutLogin(){
+            this.$axios.get("/site/account/islogin").then(response=>{
+                if (response.data.code=="logined") {
+                    this.isShowLoginName = true
+                }else{
+                    this.isShowLoginName = false
+                }
+            })
+        },
+        loginOut(){
+            this.$axios.get('/site/account/logout').then(response=>{
+                if (response.data.status==0) {
+                    this.$router.push('/login');
+                    this.isShowLoginName = false;
+                }
+            })
+        }
+    },
   // 我们组件的template中的内容，已经加载完毕
   mounted() {
     $('#menu2 li a').wrapInner('<span class="out"></span>')

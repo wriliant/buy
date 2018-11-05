@@ -34,11 +34,33 @@ const addLocalGoods = goods => {
 
     return getTotalCount()
 }
-
+/**
+ * 修改本地存储
+ * @param {*} goods 
+ */
+const updateLocalGoods = goods=>{
+    //先获取本地localstory
+    const localGoods = getLocalGoods();
+    localGoods[goods.goodsId] = goods.count;
+    localStorage.setItem(KEY,JSON.stringify(localGoods));
+    return getTotalCount();
+}
+/**
+ * 删除本地商品
+ * @param {*} goodId 
+ */
+const deleteLocalGoods = goodId => {
+    const localGoods = getLocalGoods();
+    delete localGoods[goodId];
+    localStorage.setItem(KEY,JSON.stringify(localGoods));
+    return getTotalCount();
+}
 export {
     addLocalGoods,
     getTotalCount,
     getLocalGoods,
+    updateLocalGoods,
+    deleteLocalGoods,
 }
 
 /**

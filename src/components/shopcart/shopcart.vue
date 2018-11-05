@@ -54,7 +54,7 @@
                                     <th width="104" align="left">金额(元)</th>
                                     <th width="54" align="center">操作</th>
                                 </tr>
-                                <tr v-for="item in goodList" :key="item.id">
+                                <tr v-for="(item,index) in goodList" :key="item.id">
                                     <td width="48" align="center">
                                         <el-switch v-model="item.isSelect" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
                                     </td>
@@ -71,7 +71,7 @@
                                     </td>
                                     <td width="104" align="left">{{item.sell_price * item.buycount}}</td>
                                     <td width="54" align="center">
-                                        <a href="javascript:void(0)">删除</a>
+                                        <a @click="deleteGoods(index)">删除</a>
                                     </td>
                                 </tr>
                                 <tr v-if="goodList.length === 0">
@@ -103,8 +103,8 @@
                     <!--购物车底部-->
                     <div class="cart-foot clearfix">
                         <div class="right-box">
-                            <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <button class="submit" onclick="formSubmit(this, '/', '/shopping.html');">立即结算</button>
+                            <button @click="continueBuy" class="button" >继续购物</button>
+                            <button class="submit" @click="goToPay">立即结算</button>
                         </div>
                     </div>
                     <!--购物车底部-->
@@ -115,71 +115,106 @@
 </template>
 
 <script>
-
 import { getLocalGoods } from "../../common/localstoryage.js";
-import inputnumber from '../subcomponents/inputnumber'
+import inputnumber from "../subcomponents/inputnumber";
 
 export default {
-    components:{
-        inputnumber
+  components: {
+    inputnumber
+  },
+  data() {
+    return {
+      goodList: []
+    };
+  },
+  created() {
+    this.getGoodsListData();
+  },
+  computed: {
+    //获取总数量
+    getTotalCount() {
+      let totalCount = 0;
+      this.goodList.forEach(item => {
+        totalCount += item.buycount;
+      });
+      return totalCount;
     },
-    data(){
-        return{
-            goodList:[],
-        }
-    },
-    created(){
-        this.getGoodsListData();
-    },
-    computed:{
-        //获取总数量
-        getTotalCount(){
-           let totalCount = 0;
-           this.goodList.forEach(item=>{
-               totalCount+=item.buycount;
-           })
-            return totalCount
-        },
 
-        //计算总价格
-        getTotalAmount(){
-            let totalAmount = 0;
-            this.goodList.forEach(item=>{
-                if (item.isSelect) {
-                    
-                    totalAmount += item.buycount * item.sell_price;
-                }
-            })
-            return totalAmount;
+    //计算总价格
+    getTotalAmount() {
+      let totalAmount = 0;
+      this.goodList.forEach(item => {
+        if (item.isSelect) {
+          totalAmount += item.buycount * item.sell_price;
         }
-    },
-    methods:{
-        getGoodsListData(){
-            //获取localstory中的对象
-            const localGoods = getLocalGoods();
-            //获取localstory中对象中的键
-            const keys = Object.keys(localGoods)
-
-            if(keys.length === 0){
-                    return
-            }
-            const url = `site/comment/getshopcargoods/${keys.join(',')}`
-            this.$axios.get(url).then(response=>{
-                response.data.message.forEach(item => {
-                    item.buycount = localGoods[item.id];
-                    item.isSelect = true
-                });
-                this.goodList = response.data.message;
-                
-            })
-        },
-        getChangegoods(changeGoods){
-                this.goodList.forEach(item=>{
-                    if (item.id == changeGoods.goodsId) {
-                        item.buycount = changeGoods.count
-                    }
-                })
-            }
+      });
+      return totalAmount;
     }
-}
+  },
+  methods: {
+    getGoodsListData() {
+      //获取localstory中的对象
+      const localGoods = getLocalGoods();
+      //获取localstory中对象中的键
+      const keys = Object.keys(localGoods);
+
+      if (keys.length === 0) {
+        return;
+      }
+      const url = `site/comment/getshopcargoods/${keys.join(",")}`;
+      this.$axios.get(url).then(response => {
+        response.data.message.forEach(item => {
+          item.buycount = localGoods[item.id];
+          item.isSelect = true;
+        });
+        this.goodList = response.data.message;
+      });
+    },
+    getChangegoods(changeGoods) {
+      this.goodList.forEach(item => {
+        if (item.id == changeGoods.goodsId) {
+          item.buycount = changeGoods.count;
+        }
+      });
+      this.$store.commit("updateLocalGoods", changeGoods);
+    },
+    deleteGoods(index) {
+      
+        this.$confirm("是否删除该商品?", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+        }).then(()=>{
+            
+            //先获取id
+             this.$store.commit('deleteGoods',this.goodList[index].id);
+            //在删除
+            console.log(index);
+            this.goodList.splice(index, 1);
+        })
+        .catch(() => {
+          
+        })   
+    },
+    continueBuy(){
+        this.$router.push({ path: '/goodslist' });
+    },
+    goToPay(){
+        const ids = [];
+       this.goodList.forEach(item=>{
+           if (item.isSelect) {
+               ids.push(item.id);
+           }
+       })
+       if (ids.length == 0) {
+            this.$message({
+                message: '至少选择一个商品下单',
+                type: 'warning'
+            })
+            return
+       }
+        this.$router.push({ path: '/order',query:{ids:ids.join(',')} } )
+    }
+  }
+};
 </script>

@@ -127,7 +127,7 @@ export default {
   created() {
     this.getGoodData();
     this.getGoodsList();
-    console.log(this);
+    // console.log(this);
   },
   methods: {
     getGoodData() {
