@@ -55,12 +55,17 @@ const deleteLocalGoods = goodId => {
     localStorage.setItem(KEY,JSON.stringify(localGoods));
     return getTotalCount();
 }
+
+const getLocalGoodsObj = () => {
+    return JSON.parse(localStorage.getItem(KEY) || '{}')
+}
 export {
     addLocalGoods,
     getTotalCount,
     getLocalGoods,
     updateLocalGoods,
     deleteLocalGoods,
+    getLocalGoodsObj,
 }
 
 /**

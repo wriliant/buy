@@ -31,7 +31,7 @@ const router = new VueRouter({
 
 //导航守卫
 router.beforeEach((to, from, next) => {
-    console.log(to);
+    // console.log(to);
     //记录登录后要跳去的页面
     if (to.path !=='/login') {
         localStorage.setItem('wantToVisitPath',to.fullPath)

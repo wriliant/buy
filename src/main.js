@@ -18,7 +18,7 @@ Vue.use(VueLazyLoad,{
 
 
 import router from "./router";
-import "./filters/index.js"
+import "./filters/index.js";
 import "./statics/site/css/style.css";
 import store from "./store/index.js";
 new Vue({
